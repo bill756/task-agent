@@ -91,7 +91,7 @@ OPENAI_MODEL=deepseek-chat
 
 ### 5. 安全提示
 
-- `.env` **不要**提交到版本库，也不要截图/共享/录制（内含真实凭据）。本仓库不追踪 `.env` 与 `.gitignore`，clone 后自行 `cp .env.example .env` 并按需创建本地忽略规则。
+- `.env` **不要**提交到版本库，也不要截图/共享/录制（内含真实凭据）。clone 后按「快速开始」创建 `.env`。
 - 若 `.env` 中出现了真实格式的 key 且不确定是否仍在使用，请尽快轮换该凭据，本地只保留占位符。
 
 ## 架构
@@ -140,4 +140,4 @@ entry ──plan为None?──> inspect → plan ──approved?──> execute 
 | LLM 工具面 | 仅只读工具；写入不进工具列表 |
 | 命令执行 | 白名单匹配 + `shell=False` + 30 秒超时；白名单为空时跳过验证（审计留痕） |
 | 审计 | 所有操作（含拒绝与 LLM 观察）记录到 `audit` |
-| 凭据 | API key 仅存 `.env`，`.env` 已被 `.gitignore` 排除 |
+| 凭据 | API key 仅存 `.env`，请勿提交到版本库 |

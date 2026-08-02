@@ -7,12 +7,10 @@ root.after() -- Tkinter widgets are only ever touched from the main thread.
 
 from __future__ import annotations
 
-import json
 import queue
 import shlex
 import threading
 import tkinter as tk
-from dataclasses import asdict
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
@@ -22,6 +20,44 @@ from graph import AgentState, build_graph, initial_state
 from llm_planner import LLMPlanner
 
 LOG_LIMIT = 2000
+
+
+def render_report_markdown(report) -> str:
+    """Render a RunReport as human-readable Markdown."""
+    lines: list[str] = ["# 任务报告", ""]
+    lines.append(f"- **状态**: `{report.status}`")
+    if report.test_exit_code is None:
+        lines.append("- **测试退出码**: 未运行")
+    else:
+        lines.append(f"- **测试退出码**: `{report.test_exit_code}`")
+    lines += ["", "## 变更计划", ""]
+    lines.append(f"- **摘要**: {report.plan.summary}")
+    lines.append("- **待写文件**:")
+    for write in report.plan.writes:
+        lines.append(f"  - `{write.path}`")
+    if report.plan.test_command:
+        lines.append(f"- **验证命令**: `{' '.join(report.plan.test_command)}`")
+    else:
+        lines.append("- **验证命令**: （无）")
+    lines += ["", "## 实际变更文件", ""]
+    if report.changed_files:
+        lines.extend(f"- `{path}`" for path in report.changed_files)
+    else:
+        lines.append("（无）")
+    lines += ["", "## 执行轨迹", ""]
+    if report.trace:
+        for item in report.trace:
+            details = " ".join(f"{k}={v}" for k, v in item.items() if k != "state")
+            lines.append(f"- **{item.get('state')}** {details}")
+    else:
+        lines.append("（无）")
+    lines += ["", "## 审计日志", ""]
+    if report.audit:
+        for event in report.audit:
+            lines.append(f"- `{event.tool}` allowed={event.allowed}: {event.detail}")
+    else:
+        lines.append("（无）")
+    return "\n".join(lines) + "\n"
 
 
 class MaintenanceGUI:
@@ -184,12 +220,12 @@ class MaintenanceGUI:
         if self.last_report is None:
             return
         path = filedialog.asksaveasfilename(
-            defaultextension=".json", filetypes=[("JSON", "*.json")], initialfile="report.json"
+            defaultextension=".md", filetypes=[("Markdown", "*.md")], initialfile="report.md"
         )
         if not path:
             return
         with open(path, "w", encoding="utf-8") as fh:
-            json.dump(asdict(self.last_report), fh, ensure_ascii=False, indent=2)
+            fh.write(render_report_markdown(self.last_report))
         self._append_log(f"[导出] 报告已保存到 {path}")
 
     # ---------- background thread ----------

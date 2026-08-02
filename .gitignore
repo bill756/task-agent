@@ -13,3 +13,6 @@ __pycache__/
 # 过程性文档（agent 执行报告、结构分析），不入库
 report.md
 docs/structure-analysis.md
+
+# 开发过程设计文档(非运行必需),不入库
+docs/superpowers/

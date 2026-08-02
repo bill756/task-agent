@@ -36,7 +36,7 @@ MCP 风格工具与安全边界，`RepositoryAgent` 以显式状态机编排六�
 ### 3.1 文件结构
 
 ```
-仓库维护Agent/
+任务Agent/
 ├── __init__.py        # 出口更新：RepositoryTools + build_graph
 ├── core.py            # 保留 RepositoryTools/ChangePlan/WriteRequest/RunReport/PolicyError/AuditEvent；删除 RepositoryAgent/DeterministicPlanner
 ├── graph.py           # 新增：LangGraph StateGraph 编排

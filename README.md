@@ -38,21 +38,58 @@ CLI 输出 JSON 报告，包含 `status`、`plan`、`changed_files`、`trace`、
 
 ## 配置（.env）
 
+所有在线 API 凭据与运行参数都通过仓库根目录的 `.env` 文件配置（也可用同名**系统环境变量**覆盖），由 `config.py::load_settings` 在启动时加载并校验，无需修改任何源码。
+
+### 1. 创建 `.env`
+
+```bash
+cp .env.example .env        # Windows: copy .env.example .env
+```
+
+编辑 `.env`，至少填入必填项（见下）。程序默认自动加载仓库根目录下的 `.env`；CLI 可用 `--env <path>` 指定其他路径；GUI 固定读取当前目录的 `.env`。
+
+### 2. 必填变量
+
 | 变量 | 说明 | 默认 |
 |------|------|------|
-| `OPENAI_BASE_URL` | OpenAI 兼容 API 地址 | `https://api.deepseek.com/v1` |
-| `OPENAI_API_KEY` | API 密钥（必填） | — |
+| `OPENAI_BASE_URL` | OpenAI 兼容 API 地址（末尾多余的 `/` 会被去掉） | `https://api.deepseek.com/v1` |
+| `OPENAI_API_KEY` | API 密钥（**必填**，缺失/为空时启动即报错） | — |
 | `OPENAI_MODEL` | 模型名 | `deepseek-chat` |
+
+示例（DeepSeek）：
+
+```ini
+OPENAI_BASE_URL=https://api.deepseek.com/v1
+OPENAI_API_KEY=sk-your-key-here
+OPENAI_MODEL=deepseek-chat
+```
+
+> 兼容服务：DeepSeek / 通义千问 / OpenAI / 硅基流动 等，只需把 `OPENAI_BASE_URL` 换成对应端点、`OPENAI_MODEL` 换成对应模型名即可。
+
+### 3. 可选调优参数
+
+| 变量 | 说明 | 默认 |
+|------|------|------|
 | `OPENAI_TIMEOUT` | 单次 LLM 请求超时（秒） | `120` |
-| `MAX_TOOL_ITERS` | 单轮规划内 LLM 最多工具调用轮数 | `6` |
+| `MAX_TOOL_ITERS` | 单轮规划内 LLM 最多调用工具的轮数 | `6` |
 | `MAX_REPAIRS` | 测试失败后自动修复上限 | `1` |
 
-真实环境变量优先级高于 `.env` 文件。
+数值型参数必须为整数，解析失败会抛 `ConfigError` 并中断启动。
+
+### 4. 加载优先级与校验
+
+- 优先级：**系统环境变量 > `.env` 文件 > 内置默认值**（`config.py::load_settings` 实际实现；不存在逐变量的命令行覆盖，CLI 的 `--env` 仅用于指定 `.env` 文件路径）。
+- `OPENAI_API_KEY` 缺失或为空时启动即报错：CLI 打印 usage error 退出，GUI 弹窗提示「配置错误」。
+
+### 5. 安全提示
+
+- `.env` 已被 `.gitignore` 排除，**不要**提交到版本库，也不要截图/共享/录制（内含真实凭据）。
+- 若 `.env` 中出现了真实格式的 key 且不确定是否仍在使用，请尽快轮换该凭据，本地只保留占位符。
 
 ## 架构
 
 ```
-任务Agent/   # 物理目录仍为“仓库维护Agent”，如需可自行重命名
+任务Agent/
 ├── core.py          # 安全层：RepositoryTools（路径防护/审批/白名单/审计）+ 数据类
 ├── graph.py         # 编排层：LangGraph StateGraph（六阶段流水线）
 ├── llm_planner.py   # 智能层：在线规划/修复（工具循环 + 结构化输出）

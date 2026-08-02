@@ -190,3 +190,12 @@ for _ in range(MAX_TOOL_ITERS):
 - 图级：`build_graph` 的 approved=False 短路、入口路由（带/不带 plan）、
   repair 循环上限。
 - 手工：GUI 两按钮流程 + 后台线程不冻结 UI。
+
+## 9. 实现偏差记录（2026-08-03，实现阶段，经 review 驱动）
+
+- **审批门图内强制**：入口路由对"plan 已存在但 `approved=False`"的状态直接导向 awaiting；`execute_node` 增加 `approved` 防御检查。不再依赖调用方约定。
+- **报告状态推导**：`report_node` 按 trace 中是否执行过 execute 推导最终状态，第二次 stream 无需调用方重置 `status`。
+- **GUI 新增「验证命令白名单」输入框**（每行一条 argv）；`RepositoryTools.run_test` 在白名单为空时跳过验证并在审计留痕（CLI/GUI 均可不配白名单直接运行）。
+- **LLM 解析失败重试一次**（追加 SystemMessage 提示），仍失败才抛 `PlanParseError`。
+- 测试以 `smoke_test.py` 承载（11 个离线用例：图路径 + mock LLM 工具循环 + 配置校验）。
+

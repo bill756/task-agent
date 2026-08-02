@@ -1,4 +1,4 @@
-"""Approval-gated repository maintenance Agent (online LLM + GUI)."""
+"""Approval-gated repository Task Agent (online LLM + GUI)."""
 
 from .config import ConfigError, Settings, load_settings
 from .core import AuditEvent, ChangePlan, PolicyError, RepositoryTools, RunReport, WriteRequest

@@ -13,7 +13,7 @@ from llm_planner import LLMPlanner
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Approval-gated repository maintenance Agent (online LLM)")
+    parser = argparse.ArgumentParser(description="Approval-gated repository Task Agent (online LLM)")
     parser.add_argument("task")
     parser.add_argument("--repo", type=Path, default=Path.cwd())
     parser.add_argument("--approve", action="store_true", help="approve the proposed mutation")

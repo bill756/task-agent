@@ -1,4 +1,4 @@
-"""Tkinter GUI for the repository maintenance Agent.
+"""Tkinter GUI for the repository Task Agent.
 
 Threading model: graph.stream() runs in a background thread and pushes
 (node_name, updates) events into a queue.Queue; the UI polls the queue with
@@ -27,7 +27,7 @@ LOG_LIMIT = 2000
 class MaintenanceGUI:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
-        root.title("仓库维护 Agent")
+        root.title("任务 Agent")
         root.geometry("920x700")
 
         self.settings: Settings | None = None

@@ -23,8 +23,7 @@ from core import ChangePlan, RepositoryTools, WriteRequest
 
 NO_FIX_MARKER = "NO_FIX"
 
-SYSTEM_PLAN_PROMPT = """你是一个仓库维护 Agent 的规划器。用户会给你维护任务和仓库文件清单。
-你可以调用只读工具（list_files / read_file / search_text）观察仓库后再决定改动。
+SYSTEM_PLAN_PROMPT = """你是一个任务 Agent 的规划器，负责对给定仓库执行用户任务。你可以调用只读工具（list_files / read_file / search_text）观察仓库后再决定改动。
 最后必须通过 submit_plan 工具提交变更计划，参数为结构化 JSON：
 - summary: 计划摘要
 - writes: 要写入的文件列表，每项 {path, content}，content 必须是该文件的完整新内容
@@ -35,7 +34,7 @@ SYSTEM_PLAN_PROMPT = """你是一个仓库维护 Agent 的规划器。用户会�
 - 只规划必要的改动，不要重写无关文件
 """
 
-SYSTEM_REPAIR_PROMPT = """你是仓库维护 Agent 的修复器。测试失败，需要你根据测试输出修正计划。
+SYSTEM_REPAIR_PROMPT = """你是任务 Agent 的修复器。测试失败，需要你根据测试输出修正计划。
 可以调用只读工具观察仓库。修正后通过 submit_plan 提交新计划；
 如果问题无法修复，直接回复 NO_FIX。"""
 

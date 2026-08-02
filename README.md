@@ -1,6 +1,6 @@
-# 仓库维护Agent
+# 任务Agent
 
-审批门控制的仓库维护 Agent：**在线 LLM（OpenAI 兼容 API）规划 + LangGraph 编排 + Tkinter GUI**。
+审批门控制的**任务 Agent**：面向本地仓库，**在线 LLM（OpenAI 兼容 API）规划 + LangGraph 编排 + Tkinter GUI**。
 
 ## 核心能力
 
@@ -52,7 +52,7 @@ CLI 输出 JSON 报告，包含 `status`、`plan`、`changed_files`、`trace`、
 ## 架构
 
 ```
-仓库维护Agent/
+任务Agent/   # 物理目录仍为“仓库维护Agent”，如需可自行重命名
 ├── core.py          # 安全层：RepositoryTools（路径防护/审批/白名单/审计）+ 数据类
 ├── graph.py         # 编排层：LangGraph StateGraph（六阶段流水线）
 ├── llm_planner.py   # 智能层：在线规划/修复（工具循环 + 结构化输出）
